@@ -30,12 +30,31 @@ const Contact = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
-      setFormData({ name: "", email: "", message: "" });
-      showAlertMessage("success", "Your message has been sent successfully!");
-    }, 1000);
+
+    const form = e.target;
+
+    fetch(form.action, {
+      method: "POST",
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: new URLSearchParams(new FormData(form)).toString(),
+    })
+      .then((response) => {
+        if (response.ok) {
+          setFormData({ name: "", email: "", message: "" });
+          showAlertMessage("success", "Your message has been sent successfully!");
+        } else {
+          showAlertMessage("danger", "Failed to send message. Please try again.");
+        }
+        setIsLoading(false);
+      })
+      .catch(() => {
+        setIsLoading(false);
+        showAlertMessage("danger", "Something went wrong. Please try again.");
+      });
   };
+
 
   return (
     <section className="relative flex items-center justify-center c-space section-spacing min-h-screen" id="contact">
